@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Anthony Tang, software engineer</title>
+<meta name="description" content="Anthony Tang. Software engineer. Large-scale AI and web systems, and interpretability research." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --void:#05060B;
+    --ink:#E8EDF8;
+    --muted:#8A96B4;
+    --dim:#4A5570;
+    --faint:#2F3648;
+    --rule:#171C2B;
+    --sun:#F5D97A;
+    --panel:#0A0D16;
+    --sans:'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --mono:'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:var(--void); color:var(--ink);
+    font-family:var(--sans); font-weight:400;
+    -webkit-font-smoothing:antialiased;
+    height:220vh;
+    height:220svh;
+  }
+  #sky{ position:fixed; inset:0; width:100%; height:100%; z-index:0; display:block; }
+
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:4;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:18px 26px;
+    font-family:var(--mono); font-size:11px; letter-spacing:0.16em;
+    mix-blend-mode:normal;
+  }
+  header .mark{ color:var(--ink); text-transform:uppercase; }
+  header nav{ display:flex; gap:20px; }
+  header nav a{ color:var(--dim); text-decoration:none; transition:color .25s; }
+  header nav a:hover, header nav a:focus-visible{ color:var(--ink); }
+  header .res{ color:var(--muted); text-decoration:none; }
+  header .res:hover{ color:var(--ink); }
+  @media (max-width:720px){
+    header{ padding:14px 18px; }
+    header nav{
+      display:flex; justify-content:space-around; gap:0;
+      position:fixed; left:0; right:0; bottom:0;
+      padding:12px 6px calc(12px + env(safe-area-inset-bottom, 0px));
+      background:rgba(5,6,11,0.92);
+      -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+      border-top:1px solid var(--rule);
+      z-index:6;
+    }
+    header nav a{ font-size:10px; letter-spacing:0.08em; padding:5px 3px; }
+    header nav a:active{ color:var(--ink); }
+  }
+
+  #hero{
+    position:relative; z-index:2;
+    height:100vh; height:100svh; display:flex; flex-direction:column;
+    justify-content:center; padding:0 26px 11vh;
+    max-width:780px; margin:0 auto;
+    text-align:center; align-items:center;
+    pointer-events:none;
+  }
+  #hero h1{
+    font-size:clamp(44px, 9vw, 92px); font-weight:700;
+    letter-spacing:-0.035em; line-height:0.94;
+    text-transform:lowercase;
+    text-shadow:0 2px 40px rgba(5,6,11,0.95), 0 0 14px rgba(5,6,11,0.8);
+  }
+  #hero .sub{
+    margin-top:20px; font-size:clamp(14px,2vw,17px);
+    color:var(--muted); line-height:1.7; max-width:46ch;
+    text-shadow:0 1px 24px rgba(5,6,11,0.95);
+  }
+  #hero .cue{
+    margin-top:44px; font-family:var(--mono); font-size:11px; font-weight:500;
+    letter-spacing:0.2em; color:#DCE6FA; text-transform:uppercase;
+    text-shadow:0 1px 3px rgba(5,6,11,1), 0 2px 24px rgba(5,6,11,0.98);
+    animation:drift 2.6s ease-in-out infinite;
+  }
+  @keyframes drift{ 0%,100%{ transform:translateY(0); opacity:.82 } 50%{ transform:translateY(5px); opacity:1 } }
+
+  #panel{
+    position:fixed; z-index:5; top:0; right:0; bottom:0;
+    width:min(430px, 88vw);
+    background:var(--panel);
+    border-left:1px solid var(--rule);
+    padding:78px 34px 34px;
+    transform:translateX(102%);
+    transition:transform .62s cubic-bezier(.16,1,.3,1);
+    overflow-y:auto;
+  }
+  #panel.open{ transform:translateX(0); }
+  #panel .eyebrow{
+    font-family:var(--mono); font-size:10px; letter-spacing:0.16em;
+    color:var(--dim); text-transform:uppercase; margin-bottom:12px;
+  }
+  #panel h2{
+    font-size:34px; font-weight:700; letter-spacing:-0.025em;
+    text-transform:lowercase; margin-bottom:18px;
+  }
+  #panel .body{ font-size:14px; line-height:1.8; color:var(--muted); }
+  #panel .body p + p{ margin-top:14px; }
+  #panel .body strong{ color:var(--ink); font-weight:500; }
+  #panel .body a{ color:var(--ink); text-decoration:none; border-bottom:1px solid var(--dim); }
+  #panel .body .todo{ color:#8A7440; border-left:2px solid #4A3F22; padding-left:11px; font-size:13px; }
+  #panel .body em{ color:var(--dim); font-style:normal; font-family:var(--mono); font-size:11.5px; }
+  #panel .body span.todo{ border-left:none; padding-left:0; font-size:11.5px; }
+  #panel .body .jh{ color:var(--ink); font-size:13.5px; margin-top:22px; }
+  #panel .body .jh:first-child{ margin-top:0; }
+  #panel .body .jh .dt{ color:var(--dim); font-family:var(--mono); font-size:10.5px; letter-spacing:0.04em; }
+  #panel .body ul{ margin:9px 0 0; padding-left:15px; }
+  #panel .body li{ margin-bottom:7px; line-height:1.65; }
+  #panel .body li::marker{ color:var(--dim); }
+  #panel .body a:hover{ border-color:var(--ink); }
+  #panel .meta{
+    margin-top:26px; padding-top:18px; border-top:1px solid var(--rule);
+    display:flex; flex-wrap:wrap; gap:8px;
+  }
+  #panel .meta span{
+    font-family:var(--mono); font-size:10px; letter-spacing:0.08em;
+    color:var(--muted); border:1px solid var(--rule); padding:4px 9px;
+  }
+  #close{
+    position:absolute; top:22px; right:26px;
+    background:none; border:none; cursor:pointer;
+    font-family:var(--mono); font-size:11px; letter-spacing:0.14em;
+    color:var(--dim); padding:6px;
+  }
+  #close:hover{ color:var(--ink); }
+  @media (max-width:720px){
+    #panel{
+      top:auto; left:0; width:100%; height:70vh; height:70svh;
+      border-left:none; border-top:1px solid var(--rule);
+      transform:translateY(102%);
+      padding:52px 22px calc(78px + env(safe-area-inset-bottom, 0px));
+    }
+    #panel h2{ font-size:28px; }
+    #close{ top:16px; right:20px; font-size:12px; padding:9px; }
+    #panel.open{ transform:translateY(0); }
+  }
+
+  #built{
+    position:fixed; z-index:3; bottom:18px; left:0; right:0;
+    text-align:center; pointer-events:none;
+    font-family:var(--mono); font-size:10px; letter-spacing:0.14em;
+    color:#3C4459; text-shadow:0 1px 16px rgba(5,6,11,0.92);
+  }
+  @media (max-width:720px){ #built{ display:none; } }
+
+  .sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--ink); outline-offset:3px; }
+  @media (prefers-reduced-motion:reduce){
+    html{ scroll-behavior:auto; }
+    #hero .cue{ animation:none; }
+    #panel{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<header>
+  <span class="mark">Anthony Tang</span>
+  <nav id="nav" aria-label="Sections">
+    <a href="#" data-go="about">about</a>
+    <a href="#" data-go="projects">projects</a>
+    <a href="#" data-go="research">research</a>
+    <a href="#" data-go="work">work</a>
+    <a href="#" data-go="contact">contact</a>
+  </nav>
+  <a class="res" href="Anthony_Tang_Resume.pdf">résumé →</a>
+</header>
+
+<section id="hero">
+  <h1>anthony tang</h1>
+  <p class="sub">CS @ Rice University. I build large-scale infrastructure and AI, and research interpretability in LLMs.</p>
+  <p class="cue">scroll to pull back</p>
+</section>
+
+<aside id="panel" role="dialog" aria-modal="false" aria-labelledby="p-title">
+  <button id="close" aria-label="Close section">esc ✕</button>
+  <p class="eyebrow" id="p-eyebrow"></p>
+  <h2 id="p-title"></h2>
+  <div class="body" id="p-body"></div>
+  <div class="meta" id="p-meta"></div>
+</aside>
+
+<p id="built">built by anthony tang</p>
+
+<script>
+(function(){
+  var RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var P = [
+    { n:'Mercury', au:0.39, r:3.4,  per:88,    col:'#8C8378', ty:'rock',  ext:1 },
+    { n:'Venus',   au:0.72, r:5.4,  per:225,   col:'#D9B380', ty:'venus', ext:1 },
+    { n:'Earth',   au:1.00, r:5.8,  per:365,   col:'#3E6FA8', ty:'earth', ext:1, k:'about',
+      eyebrow:'Earth · 1.00 AU', title:'about',
+      body:'<p>Hi, I\'m Anthony! I\'m a software engineer from Austin, TX! I\'m a senior at <strong>Rice University</strong>, pursuing a BS in Computer Science and graduating May 2027 with a GPA of 3.81.</p><p>I\'ve always been curious how things work and loved building things of my own, which led me to CS, where I could combine problem-solving, creativity, and curiosity to build systems that help people.</p><p>I also enjoy reading, tennis, pickleball, and time with my dog! I played trombone and bass trombone for seven years, which taught me teamwork, discipline, and communication. Those experiences shape how I work: clarity, collaboration, and ownership.</p><p>I work across full-stack and AI/ML engineering, with a focus on large-scale backend systems, service architecture, CI/CD, and production observability. Alongside that I run interpretability research on LLMs, and design and ship consumer web and iOS applications.</p>',
+      meta:['Rice University','BS Computer Science','GPA 3.81','May 2027'] },
+    { n:'Mars',    au:1.52, r:4.4,  per:687,   col:'#B34E36', ty:'mars',  ext:1, k:'projects',
+      eyebrow:'Mars · 1.52 AU', title:'projects',
+      body:'<p><strong>Adapt Language Learner</strong>. Real-time full-stack translation for wearable hardware on the AugmentOS SDK. WebSocket streams tuned for sub-second latency in live captioning, with a server-side pipeline on Supabase for automated feature extraction. <em>TypeScript, React, Node.js, Supabase, PostgreSQL.</em></p><p><strong>Roommate Matcher</strong>. Housing matcher for Rice students using weighted cosine similarity over student preferences. <em>Next.js, GraphQL, Prisma, Celery, Redis.</em></p><p><strong>OwlMart</strong>. Student marketplace serving the Rice community. <em>Next.js, TypeScript, Supabase.</em></p><p><a href="https://github.com/anthonytang">More on GitHub</a>, including OwlTrack (HackRice 14 Adobe Challenge winner) and Aetherborn, a 2D fighting game in Godot.</p>',
+      meta:['TypeScript · React','Node.js','Next.js','Supabase','PostgreSQL'] },
+    { n:'Jupiter', au:5.20, r:13.0, per:4333,  col:'#C8A57E', ty:'gas',   ext:1, k:'research',
+      eyebrow:'Jupiter · 5.20 AU', title:'research',
+      body:'<p><strong>Why It Failed: A Benchmark to Evaluate Interpretability</strong>. Co-author, with Joel Mathew, Aditya Lagu, and Prudhviraj Naidu. LM4UC Workshop, <strong>AAAI-26</strong>.</p><p>A benchmark testing whether interpretability methods can actually explain model failures. Last-token logistic probes on Gemma-2 2B perform near chance across four reasoning tasks, indicating that current methods do not predict when a model will fail. We provide a standardized evaluation framework and argue for explaining failure modes rather than reporting aggregate metrics.</p><p><a href="why-it-failed.pdf">Paper</a> · <a href="https://github.com/anthonytang/LLM-Detection-Testing">Code</a></p>',
+      meta:['AAAI-26 · LM4UC Workshop','Co-author','PyTorch','Scikit-learn','Gemma-2 2B'] },
+    { n:'Saturn',  au:9.54, r:11.0, per:10759, col:'#DCC28E', ty:'gas',   ext:2.42, k:'work',
+      eyebrow:'Saturn · 9.54 AU', title:'work',
+      body:'<p class="jh"><strong>Nextdoor</strong> · Software Engineering Intern <span class="dt">Summer 2026</span></p><ul><li>Designed and shipped a monitoring system for Nextdoor\'s Streaming ORM, instrumenting 8+ metric dimensions across production hot-path code and redesigning dashboards for real-time performance visibility.</li><li>Identified production data quality issues by debugging metric cost spikes, tracing root cause to a regex bug, and cutting observability costs by 50% through a carefully staged rollout.</li><li>Designed an error-capture system for latency-sensitive hot-path code, owning the software design from architecture through implementation.</li><li>Won Best in Show at a company-wide hackathon by building a NAM onboarding tool.</li></ul><p class="jh"><strong>WhyAI</strong> · Software Engineering Intern <span class="dt">Oct 2025 to Jan 2026</span></p><ul><li>Led a backend refactor migrating over 70% of the codebase to layered microservices along SOLID boundaries, eliminating accumulated technical debt.</li><li>Built cloud-native CI/CD with Pytest and Playwright, reaching 80% test coverage and 99.9% deployment reliability.</li></ul><p class="jh"><strong>Curriculum Associates</strong> · Software Engineering Intern <span class="dt">Summers 2024 and 2025</span></p><ul><li>Optimized data visualization for 500+ internal developers with a high-performance query over 100k+ points, a 50% productivity gain.</li><li>Led the React migration of a mission-critical asset management tool, improving responsiveness and maintainability.</li><li>Built Jira automation scripts removing 5+ hours of manual work per sprint.</li><li>Placed first in both company hackathons: an NLP transcript generator and a third-party SDK integration.</li></ul>',
+      meta:['Nextdoor','WhyAI','Curriculum Associates','Observability','Return offer'] },
+    { n:'Uranus',  au:19.2, r:8.4,  per:30687, col:'#8FC4CC', ty:'ice',   ext:1 },
+    { n:'Neptune', au:30.1, r:8.0,  per:60190, col:'#3F62BE', ty:'ice',   ext:1, k:'contact',
+      eyebrow:'Neptune · 30.06 AU', title:'contact',
+      body:'<p>Open to full time roles, research, and building things together.</p><p><a href="mailto:anthony.tang.tx@gmail.com">anthony.tang.tx@gmail.com</a><br><a href="tel:+15123489289">512-348-9289</a></p><p><a href="https://github.com/anthonytang">GitHub</a> · <a href="https://www.linkedin.com/in/anthony-tang-69665a279">LinkedIn</a></p><p><a href="Anthony_Tang_Resume.pdf">Résumé</a> · <a href="Anthony_Tang_CoverLetter.pdf">Cover letter</a></p>',
+      meta:['Email','Phone','GitHub','LinkedIn'] }
+  ];
+  var NAV = P.filter(function(p){ return p.k; });
+  var PAL = {
+    Mercury:[[62,57,52],[118,110,100],[172,162,150]],
+    Venus:  [[172,132,80],[217,179,128],[250,236,198]],
+    Earth:  [[22,54,104],[48,100,164],[74,120,70],[152,140,98],[240,245,251]],
+    Mars:   [[98,42,28],[150,62,42],[198,112,82],[238,232,222]],
+    Jupiter:[[146,96,58],[188,150,110],[226,205,168],[172,88,64]],
+    Saturn: [[174,142,92],[216,188,134],[240,224,182]],
+    Uranus: [[104,160,168],[143,196,204],[194,229,234]],
+    Neptune:[[22,40,116],[54,88,180],[124,156,226]]
+  };
+
+  function hash(n){ var s = Math.sin(n)*43758.5453; return s - Math.floor(s); }
+  function vnoise(xf,yf,sd){
+    var xi=Math.floor(xf), yi=Math.floor(yf), tx=xf-xi, ty=yf-yi;
+    tx=tx*tx*(3-2*tx); ty=ty*ty*(3-2*ty);
+    function g(a,b){ return hash(a*157.31 + b*311.7 + sd*77.13); }
+    var a=g(xi,yi), b=g(xi+1,yi), c1=g(xi,yi+1), d1=g(xi+1,yi+1);
+    return (a*(1-tx)+b*tx)*(1-ty) + (c1*(1-tx)+d1*tx)*ty;
+  }
+  function fbm(xf,yf,oct,sd){
+    var v=0, amp=0.5, f=1;
+    for (var i=0;i<oct;i++){ v += vnoise(xf*f, yf*f, sd+i*13)*amp; amp*=0.5; f*=2; }
+    return v;
+  }
+  function mix(a,b,t){ return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t]; }
+  function ramp(pal,t){
+    t = Math.max(0, Math.min(0.9999, t));
+    var n = pal.length-1, i = Math.floor(t*n);
+    return mix(pal[i], pal[i+1], t*n - i);
+  }
+
+  function surface(p, u, v, sd){
+    var pal = PAL[p.n];
+    if (p.ty === 'gas'){
+      var wob = fbm(u*3.0, v*1.1, 3, sd)*0.085;
+      var t = Math.sin((v+wob)*Math.PI*8.5)*0.5+0.5;
+      t = t*0.72 + fbm(u*8, v*26, 3, sd+5)*0.28;
+      if (p.n === 'Jupiter' && Math.hypot((u-0.62)*2.4, (v-0.60)*5.2) < 0.16) return pal[3];
+      return ramp(pal, t);
+    }
+    if (p.ty === 'ice'){
+      var t2 = fbm(u*3.4, v*8, 3, sd)*0.55 + (Math.sin(v*Math.PI*4)*0.5+0.5)*0.45;
+      if (p.n === 'Neptune' && Math.hypot((u-0.36)*2.6, (v-0.42)*5.0) < 0.13) return pal[0];
+      return ramp(pal, t2);
+    }
+    if (p.ty === 'earth'){
+      var ice = (Math.abs(v-0.5)*2 - 0.80)/0.20;
+      if (ice > 0.28) return pal[4];
+      var e = fbm(u*4.2, v*4.2, 5, sd);
+      if (e > 0.515) return mix(pal[2], pal[3], Math.min(1,(e-0.515)*6));
+      return mix(pal[0], pal[1], Math.min(1, e/0.515));
+    }
+    if (p.ty === 'mars'){
+      var cap = (Math.abs(v-0.5)*2 - 0.86)/0.14;
+      if (cap > 0.25) return pal[3];
+      return ramp([pal[0],pal[1],pal[2]], fbm(u*4.6, v*4.6, 4, sd)*1.15);
+    }
+    if (p.ty === 'venus'){
+      return ramp(pal, fbm(u*2.6 + v*1.9, v*5.5, 4, sd)*1.15);
+    }
+    var r0 = fbm(u*6.5, v*6.5, 4, sd);
+    var cr = vnoise(u*15, v*15, sd+3);
+    return ramp(pal, Math.max(0, Math.min(1, (r0 + (cr>0.80 ? -0.22 : 0))*1.2)));
+  }
+
+  function buildSphere(p, src){
+    var S = 224, R = S/2;
+    var cv = document.createElement('canvas'); cv.width = cv.height = S;
+    var g = cv.getContext('2d');
+    var id = g.createImageData(S,S), d = id.data;
+    var sd = p.n.length*11 + (p.per % 41);
+    for (var yy=0; yy<S; yy++){
+      var ny = (yy - R + 0.5)/R;
+      for (var xx=0; xx<S; xx++){
+        var nx = (xx - R + 0.5)/R;
+        var o = (yy*S+xx)*4;
+        if (nx*nx + ny*ny > 1){ d[o+3] = 0; continue; }
+        var lat = Math.asin(Math.max(-1, Math.min(1, ny)));
+        var cl = Math.cos(lat);
+        var lon = Math.asin(Math.max(-1, Math.min(1, cl < 1e-4 ? 0 : nx/cl)));
+        var u = 0.5 + lon/Math.PI, v = 0.5 + lat/Math.PI;
+        var col;
+        if (src){
+          var si = ((Math.min(src.h-1, (v*src.h)|0))*src.w + Math.min(src.w-1, (u*src.w)|0))*4;
+          col = [src.d[si], src.d[si+1], src.d[si+2]];
+        } else {
+          col = surface(p, u, v, sd);
+        }
+        d[o] = col[0]|0; d[o+1] = col[1]|0; d[o+2] = col[2]|0; d[o+3] = 255;
+      }
+    }
+    g.putImageData(id,0,0);
+    return cv;
+  }
+
+  P.forEach(function(p){
+    p.rad = Math.pow(p.au,0.42)*44;
+    p.T   = Math.pow(p.per,0.55)*0.5;
+    p.ph  = Math.random()*Math.PI*2;
+    p.h = 0; p.push = 0;
+    p.sph = buildSphere(p, null);
+    var im = new Image();
+    im.onload = function(){
+      var t = document.createElement('canvas');
+      t.width = Math.min(im.width, 512); t.height = Math.min(im.height, 256);
+      var tg = t.getContext('2d');
+      tg.drawImage(im, 0, 0, t.width, t.height);
+      var dat = tg.getImageData(0,0,t.width,t.height);
+      p.sph = buildSphere(p, { d:dat.data, w:t.width, h:t.height });
+    };
+    im.src = 'textures/' + p.n.toLowerCase() + '.jpg';
+  });
+  var MAXR = P[P.length-1].rad;
+
+  var c = document.getElementById('sky'), x = c.getContext('2d');
+  var W=0,H=0,DPR=1, stars=[];
+  function seedStars(){
+    stars = [];
+    var n = Math.round((W*H)/5200);
+    for (var i=0;i<n;i++) stars.push([Math.random(), Math.random(), Math.random()*0.5+0.14, Math.random()*1.2+0.3]);
+  }
+  function size(){
+    DPR = Math.min(window.devicePixelRatio||1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    c.width = W*DPR; c.height = H*DPR;
+    x.setTransform(DPR,0,0,DPR,0,0);
+    recalc();
+    seedStars();
+  }
+  size(); window.addEventListener('resize', size);
+
+  var MOB = false, RS = 1, MARGIN = 66;
+  function recalc(){ MOB = W <= 720; RS = MOB ? 1.5 : 1; MARGIN = MOB ? 30 : 66; }
+  function fitZoom(){ return (Math.min(W,H)/2 - MARGIN) / MAXR; }
+
+  var cam = { x:0, y:0, z:fitZoom()*7 };
+  var camT = { x:0, y:0, z:fitZoom()*7 };
+  var orbT = 0, tScale = 1, sel = null, hov = null;
+  var mx = -1e5, my = -1e5, scrollP = 0;
+
+  function onScroll(){
+    var span = window.innerHeight;
+    scrollP = Math.max(0, Math.min(1, window.scrollY / span));
+    var hero = document.getElementById('hero');
+    hero.style.opacity = String(Math.max(0, 1 - scrollP*1.6));
+  }
+  window.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+
+  function ease(t){ return 1 - Math.pow(1-t, 3); }
+
+  c.addEventListener('mousemove', function(e){ mx = e.clientX; my = e.clientY; });
+  c.addEventListener('mouseleave', function(){ mx = -1e5; my = -1e5; });
+
+  function hitAt(qx, qy, pad){
+    if (scrollP <= 0.55) return null;
+    var best = null, bd = Infinity;
+    for (var i=0;i<P.length;i++){
+      var p = P[i];
+      if (!p.k || p.px === undefined) continue;
+      var R = (p.ext > 1 ? p.pr*p.ext : p.pr) + pad;
+      var d = Math.hypot(qx - p.px, qy - p.py);
+      if (d < R && d < bd){ bd = d; best = p; }
+    }
+    return best;
+  }
+
+  var panel = document.getElementById('panel');
+  function open(p){
+    sel = p;
+    document.getElementById('p-eyebrow').textContent = p.eyebrow;
+    document.getElementById('p-title').textContent = p.title;
+    document.getElementById('p-body').innerHTML = p.body;
+    document.getElementById('p-meta').innerHTML = p.meta.map(function(m){ return '<span>'+m+'</span>'; }).join('');
+    panel.classList.add('open');
+  }
+  function close(){ sel = null; panel.classList.remove('open'); }
+  document.getElementById('close').addEventListener('click', close);
+  window.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
+  var pd = null, lastTouch = 0;
+  c.addEventListener('pointerdown', function(e){
+    if (e.pointerType === 'mouse') return;
+    pd = { x:e.clientX, y:e.clientY, t:performance.now() };
+  });
+  c.addEventListener('pointercancel', function(){ pd = null; });
+  c.addEventListener('pointerup', function(e){
+    if (e.pointerType === 'mouse' || !pd) return;
+    var moved = Math.hypot(e.clientX - pd.x, e.clientY - pd.y);
+    var dur = performance.now() - pd.t;
+    pd = null;
+    if (moved > 12 || dur > 600) return;
+    lastTouch = performance.now();
+    var t = hitAt(e.clientX, e.clientY, 26);
+    if (t) { open(t); } else if (sel) { close(); }
+  });
+  c.addEventListener('click', function(){
+    if (performance.now() - lastTouch < 800) return;
+    if (hov) { open(hov); }
+    else if (sel) { close(); }
+  });
+  document.querySelectorAll('#nav a').forEach(function(a){
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      window.scrollTo({ top: window.innerHeight, behavior: RM ? 'auto' : 'smooth' });
+      var p = NAV.filter(function(q){ return q.k === a.dataset.go; })[0];
+      if (p) open(p);
+    });
+  });
+
+  function toScreen(wx, wy){
+    return [ (wx - cam.x)*cam.z + W/2, (wy - cam.y)*cam.z + H/2 ];
+  }
+
+  function body(px,py,pr,p,lx,ly,dim){
+    x.save(); x.globalAlpha = dim;
+    x.beginPath(); x.arc(px,py,pr,0,Math.PI*2); x.clip();
+    x.drawImage(p.sph, px-pr, py-pr, pr*2, pr*2);
+    var g = x.createRadialGradient(px+lx*pr*0.5, py+ly*pr*0.5, pr*0.05, px+lx*pr*0.5, py+ly*pr*0.5, pr*1.9);
+    g.addColorStop(0,'rgba(255,250,238,0.22)');
+    g.addColorStop(0.38,'rgba(0,0,0,0)');
+    g.addColorStop(0.70,'rgba(3,4,10,0.52)');
+    g.addColorStop(1,'rgba(3,4,10,0.90)');
+    x.fillStyle = g; x.fillRect(px-pr,py-pr,pr*2,pr*2);
+    x.restore();
+  }
+
+  function reticle(px,py,rr,rot,a,span,lw){
+    x.save(); x.translate(px,py); x.rotate(rot);
+    x.strokeStyle = 'rgba(214,226,248,'+a+')'; x.lineWidth = lw; x.lineCap='round';
+    for (var i=0;i<4;i++){
+      var b = i*Math.PI/2;
+      x.beginPath(); x.arc(0,0,rr, b-span/2, b+span/2); x.stroke();
+    }
+    x.restore();
+  }
+
+  var last = performance.now(), spin = 0;
+  function frame(now){
+    var dt = Math.min((now-last)/1000, 0.05); last = now;
+
+    var frozen = !!(hov || sel);
+    tScale += ((frozen ? 0 : 1) - tScale) * (RM ? 1 : 0.09);
+    orbT += dt * (RM ? 0 : tScale) * (MOB ? 0.5 : 1);
+    spin += dt * 0.22;
+
+    var fz = fitZoom();
+    var systemZ = fz * (1 + 6*(1 - ease(scrollP)));
+    if (sel){
+      camT.z = fz * 3.4;
+      var wide = W > 720;
+      var off = wide ? (Math.min(430, W*0.88)/2 + 20) / camT.z : 0;
+      camT.x = sel.wx + off;
+      camT.y = sel.wy + (wide ? 0 : -(H*0.33)/camT.z);
+    } else {
+      camT.z = systemZ;
+      camT.x = 0;
+      camT.y = -(H*0.46/systemZ) * (1 - ease(scrollP));
+    }
+    var k = RM ? 1 : 0.075;
+    cam.x += (camT.x - cam.x)*k;
+    cam.y += (camT.y - cam.y)*k;
+    cam.z += (camT.z - cam.z)*k;
+
+    x.fillStyle = '#05060B'; x.fillRect(0,0,W,H);
+    for (var i=0;i<stars.length;i++){
+      var s = stars[i];
+      x.globalAlpha = s[2]; x.fillStyle = '#C9D6F0';
+      x.fillRect(s[0]*W, s[1]*H, s[3], s[3]);
+    }
+    x.globalAlpha = 1;
+
+    var sc = toScreen(0,0);
+    P.forEach(function(p){
+      x.beginPath(); x.arc(sc[0], sc[1], p.rad*cam.z, 0, Math.PI*2);
+      x.strokeStyle = p.k ? 'rgba(96,118,170,0.46)' : 'rgba(60,70,95,0.15)';
+      x.lineWidth = 1; x.stroke();
+    });
+
+    var sr = Math.max(9, 9*cam.z/fz);
+    var sg = x.createRadialGradient(sc[0],sc[1],2,sc[0],sc[1],sr*2.8);
+    sg.addColorStop(0,'#FFF3C4'); sg.addColorStop(0.35,'#F5D97A'); sg.addColorStop(1,'rgba(245,217,122,0)');
+    x.fillStyle = sg; x.beginPath(); x.arc(sc[0],sc[1],sr*2.8,0,Math.PI*2); x.fill();
+
+    hov = null;
+    P.forEach(function(p){
+      var a = p.ph + (orbT/p.T)*Math.PI*2;
+      p.ca = Math.cos(a); p.sa = Math.sin(a);
+      p.wx = p.ca*p.rad; p.wy = p.sa*p.rad;
+      var s = toScreen(p.wx, p.wy);
+      p.px = s[0]; p.py = s[1];
+      p.pr = Math.max(2.5, p.r*cam.z*RS);
+    });
+    hov = hitAt(mx, my, 14);
+
+    NAV.forEach(function(p){
+      p.rr = p.pr*p.ext + 5 - p.h*2;
+      p.lead = p.rr + 11;
+      p.want = 0;
+    });
+    for (var a1=0;a1<NAV.length;a1++){
+      for (var b1=a1+1;b1<NAV.length;b1++){
+        var A = NAV[a1], B = NAV[b1];
+        var axp = A.px + A.ca*(A.lead+A.want+6), ayp = A.py + A.sa*(A.lead+A.want+6);
+        var bxp = B.px + B.ca*(B.lead+B.want+6), byp = B.py + B.sa*(B.lead+B.want+6);
+        var dd = Math.hypot(axp-bxp, ayp-byp);
+        if (dd < 34){ (B.rad >= A.rad ? B : A).want += (34 - dd); }
+      }
+    }
+    NAV.forEach(function(p){ p.push += (p.want - p.push)*0.1; });
+
+    var lblA = ease(Math.max(0, Math.min(1, (scrollP - 0.45)/0.4)));
+
+    P.forEach(function(p){
+      p.h += (((hov===p)?1:0) - p.h) * 0.14;
+      var px=p.px, py=p.py, pr=p.pr;
+
+      if (p.n === 'Saturn'){
+        var rw = Math.max(0.9, pr*0.10);
+        x.save(); x.translate(px,py); x.rotate(-0.42);
+        var rings = [[1.42,0.55,'rgba(190,166,118,'],[1.72,1.0,'rgba(222,199,150,'],[2.02,0.85,'rgba(206,180,130,'],[2.30,0.4,'rgba(178,155,110,']];
+        for (var ri=0; ri<rings.length; ri++){
+          var rg = rings[ri];
+          x.strokeStyle = rg[2] + (0.85*rg[1]) + ')';
+          x.lineWidth = rw*rg[1];
+          x.beginPath(); x.ellipse(0,0, pr*rg[0], pr*rg[0]*0.31, 0, 0, Math.PI*2); x.stroke();
+        }
+        x.restore();
+      }
+      body(px,py,pr,p,-p.ca,-p.sa, p.k ? 1 : 0.40);
+
+      if (!lblA) return;
+      x.globalAlpha = lblA;
+      if (p.k){
+        var al = Math.min(1, 0.60 + p.h*0.40 + (sel===p ? 0.1 : 0));
+        reticle(px,py,p.rr, spin + (p===sel?0.4:0), al, 0.56 + p.h*0.24, 1.5 + p.h*0.4);
+        var g0 = p.rr + 2.5, g1 = p.lead + p.push;
+        x.beginPath();
+        x.moveTo(px + p.ca*g0, py + p.sa*g0);
+        x.lineTo(px + p.ca*g1, py + p.sa*g1);
+        x.strokeStyle = 'rgba(214,226,248,'+(0.45 + p.h*0.45)+')'; x.lineWidth=1.2; x.stroke();
+        var tx = px + p.ca*(g1+5), ty = py + p.sa*(g1+5);
+        x.textAlign = p.ca >= 0 ? 'left' : 'right';
+        x.textBaseline = 'middle';
+        x.font = '500 13px "Space Grotesk", ui-sans-serif, sans-serif';
+        x.fillStyle = (hov===p || sel===p) ? '#FFFFFF' : '#C6D3EC';
+        x.fillText(p.k, tx, ty);
+      } else {
+        var t2x = px + p.ca*(pr+7), t2y = py + p.sa*(pr+7);
+        x.textAlign = p.ca >= 0 ? 'left' : 'right';
+        x.textBaseline = 'middle';
+        x.font = '400 9px "IBM Plex Mono", monospace';
+        x.fillStyle = '#2F3648';
+        x.fillText(p.n.toLowerCase(), t2x, t2y);
+      }
+      x.globalAlpha = 1;
+    });
+
+    c.style.cursor = hov ? 'pointer' : 'default';
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
