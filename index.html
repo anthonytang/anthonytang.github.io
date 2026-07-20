@@ -366,7 +366,7 @@
   var cam = { x:0, y:0, z:fitZoom()*7 };
   var camT = { x:0, y:0, z:fitZoom()*7 };
   var orbT = 0, tScale = 1, sel = null, hov = null;
-  var mx = -1e5, my = -1e5, scrollP = 0;
+  var mx = -1e5, my = -1e5, scrollP = 0, touchMode = false;
 
   function onScroll(){
     var span = window.innerHeight;
@@ -379,7 +379,7 @@
 
   function ease(t){ return 1 - Math.pow(1-t, 3); }
 
-  c.addEventListener('mousemove', function(e){ mx = e.clientX; my = e.clientY; });
+  c.addEventListener('mousemove', function(e){ if (e.movementX || e.movementY) touchMode = false; mx = e.clientX; my = e.clientY; });
   c.addEventListener('mouseleave', function(){ mx = -1e5; my = -1e5; });
 
   function hitAt(qx, qy, pad){
@@ -410,6 +410,7 @@
   var pd = null, lastTouch = 0;
   c.addEventListener('pointerdown', function(e){
     if (e.pointerType === 'mouse') return;
+    touchMode = true; mx = -1e5; my = -1e5;
     pd = { x:e.clientX, y:e.clientY, t:performance.now() };
   });
   c.addEventListener('pointercancel', function(){ pd = null; });
@@ -520,7 +521,7 @@
       p.px = s[0]; p.py = s[1];
       p.pr = Math.max(2.5, p.r*cam.z*RS);
     });
-    hov = hitAt(mx, my, 14);
+    hov = touchMode ? null : hitAt(mx, my, 14);
 
     NAV.forEach(function(p){
       p.rr = p.pr*p.ext + 5 - p.h*2;
