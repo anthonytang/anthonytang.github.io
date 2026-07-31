@@ -471,7 +471,7 @@
 
     var frozen = !!(hov || sel);
     tScale += ((frozen ? 0 : 1) - tScale) * (RM ? 0.4 : 0.09);
-    orbT += dt * tScale * (MOB ? 0.5 : 1) * (RM ? 0.5 : 1);
+    orbT += dt * tScale * (MOB ? 0.5 : 1);
     spin += dt * 0.22;
 
     var fz = fitZoom();
